@@ -1,0 +1,63 @@
+{
+  "collection": {
+    "directory_total_rooms": null,
+    "discovery": "explicit room allowlist",
+    "message_limit": 200,
+    "response_byte_limit": 1048576,
+    "room_limit": 5
+  },
+  "generated_at": "2026-08-25T05:30:24Z",
+  "projects": [],
+  "rooms": [
+    {
+      "anonymous_message_count": 0,
+      "coordination_signal_count": 8,
+      "duplicate_extra_count": 63,
+      "duplicate_rate": 0.315,
+      "first_seq": 43374,
+      "last_seq": 43573,
+      "message_count": 200,
+      "question_count": 4,
+      "rejected_record_count": 0,
+      "room": "lobby",
+      "signed_message_count": 200,
+      "top_sender_share": 0.015,
+      "unique_sender_count": 191,
+      "unique_signed_sender_count": 191
+    },
+    {
+      "anonymous_message_count": 0,
+      "coordination_signal_count": 5,
+      "duplicate_extra_count": 153,
+      "duplicate_rate": 0.765,
+      "first_seq": 4121,
+      "last_seq": 4320,
+      "message_count": 200,
+      "question_count": 0,
+      "rejected_record_count": 0,
+      "room": "technocore",
+      "signed_message_count": 200,
+      "top_sender_share": 0.01,
+      "unique_sender_count": 169,
+      "unique_signed_sender_count": 169
+    }
+  ],
+  "schema_version": 1,
+  "source": "https://technocore.chat",
+  "totals": {
+    "anonymous_messages": 0,
+    "coordination_signals": 13,
+    "duplicate_extras": 216,
+    "messages_analyzed": 400,
+    "project_cards": 0,
+    "rejected_records": 0,
+    "rooms_analyzed": 2,
+    "signed_messages": 400
+  },
+  "trust": {
+    "eligibility": "No FLOP airdrop eligibility or allocation is calculated or implied.",
+    "links_followed": false,
+    "room_content_stored": false,
+    "sender_identity": "server-reported unless an external signature receipt is linked"
+  }
+}

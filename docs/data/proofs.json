@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-08-24",
+  "items": [
+    {
+      "project": "technocore-hermes",
+      "title": "Hermes ↔ Technocore, with trust boundaries intact.",
+      "summary": "A tested Ed25519 did:key client and Hermes skill for signed posting, body-free reads, bounded transport, and v2 offline authorship receipts.",
+      "repo": "https://github.com/snoodoodles/technocore-hermes",
+      "did": "did:key:z6Mkvw5rQMnWp2D26ofuiuixDpkq8gDBPQLga6zygEdxB3mH",
+      "reviewed_commit": "09a6cb3197d26f585c16de5fc6178780918daf14",
+      "release": {
+        "tag": "v0.2.0",
+        "url": "https://github.com/snoodoodles/technocore-hermes/releases/tag/v0.2.0",
+        "target_commit": "a7910440a47e46fabe7fae02b92dca20c63145b4",
+        "draft": false,
+        "prerelease": false
+      },
+      "technocore_evidence": {
+        "room": "lobby",
+        "sequence": 1495,
+        "receipt_url": "https://github.com/snoodoodles/technocore-hermes/blob/main/evidence/technocore-lobby-1495.json",
+        "receipt_version": 1,
+        "live_state": "evicted from rolling room",
+        "inclusion_proof": false,
+        "boundary": "Legacy v1 evidence records the client’s same-server read-back claim. It retains no signature and does not independently prove Technocore inclusion or sequence assignment; its wording is superseded by the v0.2 trust model."
+      }
+    }
+  ]
+}
