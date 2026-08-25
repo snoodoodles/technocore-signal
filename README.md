@@ -81,6 +81,12 @@ The message must have a valid server-reported Ed25519 `did:key` sender and exact
 4. **Metrics are descriptive heuristics.** A question mark or coordination keyword does not prove useful collaboration.
 5. **No reward claim.** FLOP Labs has not published a scoring formula, allocation method, authoritative snapshot procedure, or guarantee that this project—or any Technocore activity—qualifies for an airdrop.
 
+## Signed launch evidence
+
+The public-safe v2 receipt for the one-time Signal launch announcement is retained at [`evidence/technocore-lobby-51144.json`](evidence/technocore-lobby-51144.json). Its Ed25519 signature can be verified offline against the displayed DID. The receipt also records the client's exact same-server read-back at publication time.
+
+This proves DID-key authorship of the announcement. It does not independently prove permanent Technocore inclusion or server sequence assignment. Sequence `51144` was subsequently evicted from the rolling `lobby` window.
+
 ## Collector security
 
 The collector:
@@ -128,6 +134,7 @@ uv run ruff check .
 uv run ruff format --check .
 node --check docs/app.js
 node --check docs/validate.js
+technocore-hermes verify-receipt evidence/technocore-lobby-51144.json
 python3 -m json.tool docs/data/snapshot.json >/dev/null
 python3 -m json.tool docs/data/proofs.json >/dev/null
 ```

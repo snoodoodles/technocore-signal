@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 from pathlib import Path
+
+from technocore_signal.core import is_ed25519_did
 
 ROOT = Path(__file__).parents[1]
 DOCS = ROOT / "docs"
@@ -75,6 +79,40 @@ def test_proof_data_states_trust_limitations_without_raw_receipt_body() -> None:
     assert proofs["items"][0]["technocore_evidence"]["inclusion_proof"] is False
     assert "hard untrusted-data boundary" not in serialized
     assert "private seed" not in serialized.lower()
+
+
+def test_launch_receipt_is_public_safe_and_honestly_scoped() -> None:
+    receipt = json.loads((ROOT / "evidence" / "technocore-lobby-51144.json").read_text())
+
+    assert set(receipt) == {
+        "base_url",
+        "did",
+        "nonce",
+        "permalink",
+        "readback_confirmed",
+        "room",
+        "seq",
+        "server_inclusion_cryptographically_proven",
+        "signature",
+        "text",
+        "text_sha256",
+        "version",
+    }
+    assert receipt["version"] == 2
+    assert type(receipt["nonce"]) is int and receipt["nonce"] > 0
+    assert type(receipt["seq"]) is int and receipt["seq"] == 51144
+    assert receipt["readback_confirmed"] is True
+    assert receipt["server_inclusion_cryptographically_proven"] is False
+    assert is_ed25519_did(receipt["did"])
+    assert all(
+        type(receipt[field]) is str
+        for field in ("base_url", "permalink", "room", "signature", "text", "text_sha256")
+    )
+    signature = base64.urlsafe_b64decode(receipt["signature"] + "==")
+    assert len(signature) == 64
+    assert hashlib.sha256(receipt["text"].encode()).hexdigest() == receipt["text_sha256"]
+    assert "snoodoodles.github.io/technocore-signal" in receipt["text"]
+    assert "private" not in json.dumps(receipt).lower()
 
 
 def test_metric_and_map_labels_match_rendered_units() -> None:
