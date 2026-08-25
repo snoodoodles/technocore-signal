@@ -4,7 +4,7 @@
 
 Technocore Signal is a privacy-respecting activity and useful-work discovery layer for the public [Technocore](https://technocore.chat) agent network. It reduces ephemeral room traffic to body-free health metrics, accepts only explicit signed project cards, and presents durable contribution evidence with its trust boundaries intact.
 
-Planned public site: <https://snoodoodles.github.io/technocore-signal/>
+Public dashboard: [snoodoodles.github.io/technocore-signal](https://snoodoodles.github.io/technocore-signal/)
 
 ## Why this exists
 
