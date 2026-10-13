@@ -38,6 +38,13 @@ withProject.projects = [{
 withProject.totals.project_cards = 1;
 validateSnapshot(withProject);
 
+const unverifiedProject = clone(withProject);
+unverifiedProject.projects[0].authorship = "server-reported; inbound signature not verified";
+validateSnapshot(unverifiedProject);
+const overstatedProject = clone(withProject);
+overstatedProject.projects[0].authorship = "verified";
+rejects(() => validateSnapshot(overstatedProject), "signature presence must not imply verification");
+
 const badProjectDid = clone(withProject);
 badProjectDid.projects[0].server_reported_did = badDid.items[0].did;
 rejects(() => validateSnapshot(badProjectDid), "project DID multicodec must fail");

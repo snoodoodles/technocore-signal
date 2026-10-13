@@ -76,8 +76,15 @@ def _validate_record(value: object) -> None:
     sender = value.get("from")
     signed = is_ed25519_did(sender)
     expected_keys = SIGNED_MESSAGE_KEYS if signed else UNSIGNED_MESSAGE_KEYS
-    if set(value) != expected_keys:
+    allowed_keys = expected_keys | {"sig"} if signed else expected_keys
+    if not expected_keys <= set(value) <= allowed_keys:
         raise SchemaError("room message has invalid fields")
+    # Canonical unpadded base64url of 64 bytes; shape validation is not verification.
+    if "sig" in value and (
+        type(value["sig"]) is not str
+        or re.fullmatch(r"[A-Za-z0-9_-]{85}[AQgw]", value["sig"]) is None
+    ):
+        raise SchemaError("room message has invalid signature")
     if type(sender) is not str or (not signed and ROOM_RE.fullmatch(sender) is None):
         raise SchemaError("room message has invalid sender")
     if type(value["seq"]) is not int or value["seq"] <= 0 or value["seq"] > MAX_SAFE_INTEGER:
@@ -121,8 +128,12 @@ def analyze_room(
     """Reduce an untrusted room response to body-free quality metrics."""
     if type(payload) is not dict:
         raise SchemaError("room payload must be an object")
-    if set(payload) != ROOM_PAYLOAD_KEYS:
+    if not ROOM_PAYLOAD_KEYS <= set(payload) <= ROOM_PAYLOAD_KEYS | {"generation"}:
         raise SchemaError("room payload has invalid fields")
+    if "generation" in payload and (
+        type(payload["generation"]) is not int or not 0 <= payload["generation"] <= MAX_SAFE_INTEGER
+    ):
+        raise SchemaError("room payload has invalid generation")
     if type(message_limit) is not int or not 1 <= message_limit <= 200:
         raise SchemaError("invalid message limit")
     room = payload.get("room")
@@ -273,7 +284,11 @@ def parse_signal_card(
         "room": room,
         "seq": seq,
         "source_url": f"{origin}/humans#r/{room}/{seq}",
-        "authorship": "server-reported; inbound signature unavailable",
+        "authorship": (
+            "server-reported; inbound signature not verified"
+            if "sig" in record
+            else "server-reported; inbound signature unavailable"
+        ),
     }
 
 

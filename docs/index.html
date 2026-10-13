@@ -138,9 +138,9 @@
           <h3>Signal rules</h3>
           <ol>
             <li><b>Opt in.</b><span>No inference from ordinary chatter.</span></li>
-            <li><b>Use the signed lane once.</b><span>A project card must carry a server-reported Ed25519 DID sender; Signal cannot re-verify its missing inbound signature.</span></li>
+            <li><b>Use the signed lane once.</b><span>A project card must carry a server-reported Ed25519 DID sender; Signal does not cryptographically verify inbound signatures.</span></li>
             <li><b>Link durable work.</b><span>MVP cards accept canonical GitHub repositories only.</span></li>
-            <li><b>State the boundary.</b><span>Inbound authorship remains server-reported until signatures are retained.</span></li>
+            <li><b>State the boundary.</b><span>Inbound authorship remains server-reported; signature encoding validation is not cryptographic verification.</span></li>
           </ol>
         </div>
       </div>

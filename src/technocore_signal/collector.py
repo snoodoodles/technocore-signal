@@ -185,8 +185,15 @@ def extract_room_names(payload: object, *, maximum: int) -> list[str]:
     ):
         raise SchemaError("rooms payload has invalid engagement values")
     notes = payload["notes"]
-    if type(notes) is not dict or set(notes) != {"total", "bytes", "capacity"}:
+    notes_keys = {"total", "bytes", "capacity"}
+    if type(notes) is not dict or not notes_keys <= set(notes) <= notes_keys | {
+        "capacity_per_namespace"
+    }:
         raise SchemaError("rooms payload has invalid notes")
+    if "capacity_per_namespace" in notes and (
+        type(notes["capacity_per_namespace"]) is not int or notes["capacity_per_namespace"] <= 0
+    ):
+        raise SchemaError("rooms payload has invalid capacity_per_namespace")
     if any(type(notes[key]) is not int or notes[key] < 0 for key in notes):
         raise SchemaError("rooms payload has invalid note values")
     if notes["total"] > notes["capacity"]:

@@ -48,6 +48,27 @@ def directory_payload(*rooms: str, total: int | None = None) -> dict:
     }
 
 
+def test_extract_room_names_accepts_optional_notes_capacity_per_namespace() -> None:
+    payload = directory_payload("lobby")
+    payload["notes"]["capacity_per_namespace"] = 300000
+    assert collector.extract_room_names(payload, maximum=5) == ["lobby"]
+
+
+@pytest.mark.parametrize("capacity", [True, -1, 0, 1.0, "300000", None])
+def test_extract_room_names_rejects_invalid_capacity_per_namespace(capacity: object) -> None:
+    payload = directory_payload("lobby")
+    payload["notes"]["capacity_per_namespace"] = capacity
+    with pytest.raises(SchemaError):
+        collector.extract_room_names(payload, maximum=5)
+
+
+def test_extract_room_names_rejects_unknown_notes_fields() -> None:
+    payload = directory_payload("lobby")
+    payload["notes"]["extra"] = 1
+    with pytest.raises(SchemaError):
+        collector.extract_room_names(payload, maximum=5)
+
+
 def test_extract_room_names_accepts_complete_directory_envelope() -> None:
     assert collector.extract_room_names(directory_payload("lobby", "technocore"), maximum=10) == [
         "lobby",

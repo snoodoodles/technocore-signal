@@ -70,6 +70,78 @@ def room_payload(messages: list[dict], room: str = "lobby") -> dict:
     }
 
 
+def test_analyze_room_accepts_optional_generation_without_retaining_it() -> None:
+    payload = room_payload([message(1, "alice", "ordinary body")])
+    payload["generation"] = 0
+    assert analyze_room(payload) == analyze_room(room_payload(payload["messages"]))
+
+
+@pytest.mark.parametrize("generation", [True, -1, 1.0, "0", None, 9_007_199_254_740_992])
+def test_analyze_room_rejects_invalid_generation(generation: object) -> None:
+    payload = room_payload([])
+    payload["generation"] = generation
+    with pytest.raises(SchemaError):
+        analyze_room(payload)
+
+
+def test_signed_signature_is_validated_but_not_verified_or_retained() -> None:
+    import base64
+
+    body = json.dumps(
+        {
+            "project": "Signal",
+            "summary": "Bounded collector.",
+            "repo": "https://github.com/acme/signal",
+            "stage": "building",
+            "seeking": "Reviewers",
+        }
+    )
+    record = message(1, DID_A, f"SIGNAL/1 {body}", nonce=1)
+    record["sig"] = base64.urlsafe_b64encode(bytes(range(64))).decode().rstrip("=")
+    ordinary = message(2, DID_A, "ordinary body", nonce=2)
+    ordinary["sig"] = record["sig"]
+    snapshot = build_snapshot(
+        [room_payload([record, ordinary])], generated_at="2026-08-24T20:00:00Z"
+    )
+    assert snapshot["totals"]["signed_messages"] == 2
+    assert snapshot["projects"][0]["authorship"] == (
+        "server-reported; inbound signature not verified"
+    )
+    serialized = json.dumps(snapshot)
+    assert record["sig"] not in serialized
+    assert "ordinary body" not in serialized
+    assert "SIGNAL/1" not in serialized
+
+
+@pytest.mark.parametrize(
+    "sig", [None, True, 1, {}, "", "a" * 85, "a" * 87, "+" * 86, "A" * 85 + "B", "A" * 86 + "=="]
+)
+def test_analyze_room_rejects_malformed_signature(sig: object) -> None:
+    record = message(1, DID_A, "one", nonce=1)
+    record["sig"] = sig
+    with pytest.raises(SchemaError):
+        analyze_room(room_payload([record]))
+    assert parse_signal_card("lobby", record) is None
+
+
+def test_analyze_room_rejects_signature_on_anonymous_sender() -> None:
+    record = message(1, "alice", "one")
+    record["sig"] = "A" * 86
+    with pytest.raises(SchemaError):
+        analyze_room(room_payload([record]))
+
+
+@pytest.mark.parametrize("target", ["root", "message"])
+def test_optional_api_fields_do_not_allow_unknown_fields(target: str) -> None:
+    record = message(1, DID_A, "one", nonce=1)
+    record["sig"] = "A" * 86
+    payload = room_payload([record])
+    payload["generation"] = 0
+    (payload if target == "root" else record)["extra"] = "unknown"
+    with pytest.raises(SchemaError, match="invalid fields"):
+        analyze_room(payload)
+
+
 def test_analyze_room_reports_quality_not_just_volume() -> None:
     payload = room_payload(
         [

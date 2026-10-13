@@ -212,7 +212,10 @@ function validateProject(project) {
     "project stage",
   );
   requireSchema(
-    project.authorship === "server-reported; inbound signature unavailable",
+    [
+      "server-reported; inbound signature unavailable",
+      "server-reported; inbound signature not verified",
+    ].includes(project.authorship),
     "project authorship label",
   );
 }
